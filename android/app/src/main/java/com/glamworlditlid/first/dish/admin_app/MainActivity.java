@@ -1,4 +1,4 @@
-package com.glamworlditlid.admin_app;
+package com.glamworlditlid.first.dish.admin_app;
 
 import io.flutter.embedding.android.FlutterActivity;
 

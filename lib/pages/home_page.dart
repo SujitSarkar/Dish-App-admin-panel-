@@ -18,6 +18,7 @@ import 'package:admin_app/widgets/routing_animation.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -75,39 +76,34 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: Design.borderRadius,
                             splashColor: Theme.of(context).primaryColor,
                               child: HomeMenuTile(index: index),
-                            onTap: () =>
-                            index == 0
-                                ? Navigator.push(context, AnimationPageRoute(
-                                navigateTo: AddNewUser()))
-                                : index == 1
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: AllUserList()))
-                                : index == 2
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: PendingBillUserList()))
-                                : index == 3
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: PaidBillUserList()))
-                                : index == 4
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: PendingBill()))
-                                : index == 5
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: BillingInfo()))
-                                : index == 6
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: UserProblemList()))
-                                : index == 7
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: OfficeAddress()))
-                                : index == 8
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: AboutUs()))
-                                : index == 9
-                                ? Navigator.push(context,
-                                AnimationPageRoute(navigateTo: LainManList()))
-                                : Navigator.push(context,
-                                AnimationPageRoute(navigateTo: LoginPage())),
+                            onTap: () async{
+                            if(index == 0) Navigator.push(context, AnimationPageRoute(
+                                navigateTo: AddNewUser()));
+
+                                else if(index == 1)Navigator.push(context,
+                                AnimationPageRoute(navigateTo: AllUserList()));
+                                else if(index == 2) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: PendingBillUserList()));
+                                else if(index == 3) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: PaidBillUserList()));
+                                else if(index == 4) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: PendingBill()));
+                                else if(index == 5) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: BillingInfo()));
+                                else if(index == 6) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: UserProblemList()));
+                                else if(index == 7) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: OfficeAddress()));
+                                else if(index == 8) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: AboutUs()));
+                                else if(index == 9) Navigator.push(context,
+                                AnimationPageRoute(navigateTo: LainManList()));
+                                else if(index==10){
+                                  SharedPreferences pref = await SharedPreferences.getInstance();
+                                  pref.clear();
+                                  Navigator.pushAndRemoveUntil(context, AnimationPageRoute(navigateTo: LoginPage()), (route) => false);
+                            }
+                                },
                           ),
                         ),
                       )),

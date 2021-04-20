@@ -1,30 +1,59 @@
+import 'package:admin_app/model/user_model.dart';
+import 'package:admin_app/providers/user_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
 import 'package:admin_app/tiles/user_tile.dart';
 import 'package:admin_app/widgets/app_bar.dart';
+import 'package:admin_app/widgets/no_internet.dart';
+import 'package:admin_app/widgets/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
-class PendingBillUserList extends StatelessWidget {
+class PendingBillUserList extends StatefulWidget {
+
+  @override
+  _PendingBillUserListState createState() => _PendingBillUserListState();
+}
+
+class _PendingBillUserListState extends State<PendingBillUserList> {
+  int _counter=0;
+
+  _customInit(UserProvider uProvider)async{
+    showLoadingDialog('অপেক্ষা করুন...');
+    setState(()=>_counter++);
+    await uProvider.checkConnectivity();
+    await uProvider.getPendingBillUser().then((value){
+      if(value==true) closeLoadingDialog();
+      else{
+        closeLoadingDialog();
+        showErrorMgs('ডেটা লোড অসম্পন্ন হয়েছে! আবার চেষ্টা করুন।');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final UserProvider uProvider = Provider.of<UserProvider>(context);
+    if(_counter==0) _customInit(uProvider);
+
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: PublicAppBar(context,'বকেয়া বিল গ্রাহকের তালিকা'),
       ),
-      body: _bodyUI(size,context),
+      body:uProvider.internetConnected==true? _bodyUI(size,context,uProvider):NoInternet(uProvider),
     );
   }
 
-  Widget _bodyUI(Size size,BuildContext context)=>AnimationLimiter(
+  Widget _bodyUI(Size size,BuildContext context,UserProvider uProvider)=>AnimationLimiter(
     child: RefreshIndicator(
       backgroundColor: CustomColors.whiteColor,
-      onRefresh: () async {},
+      onRefresh: () async {await uProvider.getPendingBillUser();},
       child: ListView.builder(
-        itemCount: 16,
+        itemCount: uProvider.pendingBillUserList.length,
         itemBuilder: (context, index) =>
             AnimationConfiguration.staggeredList(
                 position: index,
@@ -33,8 +62,8 @@ class PendingBillUserList extends StatelessWidget {
                     verticalOffset: 400,
                     child: FadeInAnimation(
                       child: GestureDetector(
-                          onTap: ()=>_userDetailsModal(size,context),
-                          child: UserTile(index: index)
+                          onTap: ()=>_userDetailsModal(size,context,index,uProvider.pendingBillUserList),
+                          child: UserTile(index: index,userList:  uProvider.pendingBillUserList,)
                       ),
                     )
                 )
@@ -43,7 +72,7 @@ class PendingBillUserList extends StatelessWidget {
     ),
   );
 
-  void _userDetailsModal(Size size,BuildContext context){
+  void _userDetailsModal(Size size,BuildContext context,int index, List<UserModel> userList){
     showModalBottomSheet(
       context: context,
       builder: (context)=> Container(
@@ -77,19 +106,19 @@ class PendingBillUserList extends StatelessWidget {
                             style: Design.subTitleStyle(size),
                             children: <TextSpan>[
                               TextSpan(text: 'নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: 'ইসমাইল হোসাইন\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${userList[index].name}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'মোবাইল: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '01830200087\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${userList[index].phone}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'বাবার নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: 'আবু কাশেম\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${userList[index].fatherName}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'এন আইডি নাম্বার: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '01830200087736473739\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${userList[index].nID}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'বাড়ির ঠিকানা: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: 'হাউস-১৬, সোনারগাঁও জনপথ রোড, উত্তরা, ঢাকা',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${userList[index].address}',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                             ],
                           ),

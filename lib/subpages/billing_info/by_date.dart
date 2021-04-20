@@ -1,28 +1,52 @@
+import 'package:admin_app/model/billing_info_model.dart';
+import 'package:admin_app/providers/billing_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
 import 'package:admin_app/tiles/billing_info_tile.dart';
-import 'package:admin_app/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+// ignore: must_be_immutable
 class BillingInfoByDate extends StatefulWidget {
+  BillingProvider bProvider;
+  BillingInfoByDate(this.bProvider);
+
   @override
   _BillingInfoByDateState createState() => _BillingInfoByDateState();
 }
 
 class _BillingInfoByDateState extends State<BillingInfoByDate> {
   DateTime _date;
-  String _selectedDate;
+  List<BillingInfoModel> billingInfoByDateList = [];
+  List<BillingInfoModel> filteredList = [];
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = '${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}';
+    _initializeData();
   }
+  _initializeData(){
+    setState(() {
+      _date = DateTime.now();
+      billingInfoByDateList = widget.bProvider.approvedBillList;
+      filteredList = billingInfoByDateList;
+      _filterList('${_date.month}/${_date.year}');
+    });
+  }
+
+  ///SearchList builder
+  _filterList(String searchItem) {
+    setState(() {
+      filteredList = billingInfoByDateList.where((element) =>
+      (element.monthYear.contains(searchItem))).toList();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
       body: _bodyUI(context, size),
@@ -48,7 +72,7 @@ class _BillingInfoByDateState extends State<BillingInfoByDate> {
             children: [
               Icon(Icons.calendar_today_outlined,color: CustomColors.appThemeColor),
               SizedBox(width: 10),
-              Text(_selectedDate,style: Design.titleStyle(size).copyWith(color: CustomColors.liteGrey),),
+              Text('${_date.day}/${_date.month}/${_date.year}',style: Design.titleStyle(size).copyWith(color: CustomColors.liteGrey),),
             ],
           ),
         ),
@@ -57,9 +81,12 @@ class _BillingInfoByDateState extends State<BillingInfoByDate> {
         child: AnimationLimiter(
           child: RefreshIndicator(
             backgroundColor: CustomColors.whiteColor,
-            onRefresh: () async {},
+            onRefresh: () async {
+              await widget.bProvider.getApprovedBillingInfo();
+              _initializeData();
+              },
             child: ListView.builder(
-              itemCount: 16,
+              itemCount: filteredList.length,
               itemBuilder: (context, index) =>
                   AnimationConfiguration.staggeredList(
                       position: index,
@@ -67,7 +94,7 @@ class _BillingInfoByDateState extends State<BillingInfoByDate> {
                       child: SlideAnimation(
                           horizontalOffset: 400,
                           child: FadeInAnimation(
-                            child: BillingInfoTile(index: index),
+                            child: BillingInfoTile(index: index,allBillList: filteredList),
                           )
                       )
                   ),
@@ -87,7 +114,7 @@ class _BillingInfoByDateState extends State<BillingInfoByDate> {
     ).then((date)=>
         setState((){
           _date=date;
-          _selectedDate='${_date.day}-${_date.month}-${_date.year}';
+          _filterList('${_date.month}/${_date.year}');
         }));
   }
 }

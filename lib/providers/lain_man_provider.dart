@@ -1,7 +1,7 @@
 import 'package:admin_app/model/lain_man_model.dart';
-import 'package:flutter/material.dart';
+import 'package:admin_app/providers/public_provider.dart';
 
-class LainManProvider extends ChangeNotifier{
+class LainManProvider extends PublicProvider{
   LainManModel _lainManModel = LainManModel();
 
   get lainManModel=> _lainManModel;

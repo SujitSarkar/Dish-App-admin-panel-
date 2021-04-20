@@ -1,12 +1,16 @@
-import 'package:admin_app/pages/recover_password_page.dart';
+import 'package:admin_app/pages/home_page.dart';
+import 'package:admin_app/pages/lainman_home_page.dart';
 import 'package:admin_app/providers/public_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
 import 'package:admin_app/widgets/buttons.dart';
+import 'package:admin_app/widgets/no_internet.dart';
 import 'package:admin_app/widgets/notifications.dart';
 import 'package:admin_app/widgets/routing_animation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -17,11 +21,19 @@ class _LoginPageState extends State<LoginPage> {
   bool _isObscure = true;
   String _phone = '', _password = '';
   bool _admin = true;
+  int _counter=0;
+
+  _customInit(PublicProvider pProvider)async{
+    setState(()=>_counter++);
+    await pProvider.checkConnectivity();
+  }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider pProvider = Provider.of<PublicProvider>(context);
+    if(_counter==0) _customInit(pProvider);
+
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
       appBar: AppBar(
@@ -29,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: _bodyUI(size, pProvider),
+      body: pProvider.internetConnected==true? _bodyUI(size, pProvider):NoInternet(pProvider),
     );
   }
 
@@ -125,27 +137,33 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _formValidation(pProvider),
+                    onTap: () async{
+                      await pProvider.checkConnectivity().then((value){
+                        if(pProvider.internetConnected==true) _formValidation(pProvider);
+                        else showInfo('কোনও ইন্টারনেট সংযোগ নেই!');
+                      },onError: (error)=>showInfo(error.toString()));
+                    },
+
                     child: shadowButton(size, 'লগ ইন'),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        AnimationPageRoute(navigateTo: RecoverPassword())),
-                    child: _admin? Padding(
-                      padding: EdgeInsets.only(top: 25, left: 10, right: 10),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text: 'পাসওয়ার্ড পরিবর্তন করুন',
-                              style: Design.titleStyle(size).copyWith(
-                                decoration: TextDecoration.underline,
-                                color: CustomColors.textColor,
-                              )),
-                        ]),
-                      ),
-                    ):Container(),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () => Navigator.push(context,
+                  //       AnimationPageRoute(navigateTo: RecoverPassword())),
+                  //   child: _admin? Padding(
+                  //     padding: EdgeInsets.only(top: 25, left: 10, right: 10),
+                  //     child: RichText(
+                  //       textAlign: TextAlign.center,
+                  //       text: TextSpan(children: [
+                  //         TextSpan(
+                  //             text: 'পাসওয়ার্ড পরিবর্তন করুন',
+                  //             style: Design.titleStyle(size).copyWith(
+                  //               decoration: TextDecoration.underline,
+                  //               color: CustomColors.textColor,
+                  //             )),
+                  //       ]),
+                  //     ),
+                  //   ):Container(),
+                  // ),
                 ],
               ),
             ),
@@ -219,9 +237,62 @@ class _LoginPageState extends State<LoginPage> {
             )),
       );
 
-  void _formValidation(PublicProvider pProvider) {
+  void _formValidation(PublicProvider pProvider) async{
     if (_phone.isNotEmpty && _password.isNotEmpty) {
       if (_phone.length == 11) {
+
+        if(_admin==true){
+          showLoadingDialog('অপেক্ষা করুন...');
+          QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('Admin')
+              .where('phone', isEqualTo: _phone).get();
+          final List<QueryDocumentSnapshot> adminSnapshot = snapshot.docs;
+          if(adminSnapshot.isNotEmpty){
+            if(adminSnapshot[0].get('password')==_password){
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              pref.setString('phone', _phone).then((value){
+                pref.setString('identifier', 'admin');
+                closeLoadingDialog();
+                Navigator.pushAndRemoveUntil(context, AnimationPageRoute(navigateTo: HomePage()), (route) => false);
+              },onError: (error){
+                closeLoadingDialog();
+                showErrorMgs(error.toString());
+              });
+
+            }else{
+              closeLoadingDialog();
+              showErrorMgs('ভুল পাসওয়ার্ড!');
+            }
+          }else{
+            closeLoadingDialog();
+            showErrorMgs('ভুল নাম্বার!');
+          }
+        }
+        else if(_admin==false){
+          showLoadingDialog('অপেক্ষা করুন...');
+          QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('LainMan')
+              .where('phone', isEqualTo: _phone).get();
+          final List<QueryDocumentSnapshot> adminSnapshot = snapshot.docs;
+          if(adminSnapshot.isNotEmpty){
+            if(adminSnapshot[0].get('password')==_password){
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              pref.setString('phone', _phone).then((value){
+                pref.setString('identifier', 'lainMan');
+                closeLoadingDialog();
+                Navigator.pushAndRemoveUntil(context, AnimationPageRoute(navigateTo: LainManHome()), (route) => false);
+              },onError: (error){
+                closeLoadingDialog();
+                showErrorMgs(error.toString());
+              });
+
+            }else{
+              closeLoadingDialog();
+              showErrorMgs('ভুল পাসওয়ার্ড!');
+            }
+          }else{
+            closeLoadingDialog();
+            showErrorMgs('ভুল নাম্বার!');
+          }
+        }
       } else
         showInfo('মোবাইল নাম্বার ১১ সংখ্যার হতে হবে');
     } else

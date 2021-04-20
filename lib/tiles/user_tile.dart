@@ -1,3 +1,4 @@
+import 'package:admin_app/model/user_model.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
 import 'package:expandable_text/expandable_text.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class UserTile  extends StatelessWidget {
   int index;
-  UserTile({this.index});
+  List<UserModel> userList;
+  UserTile({this.index,this.userList});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class UserTile  extends StatelessWidget {
 
         title:
         ExpandableText(
-          'Sujit Sarkar',
+          userList[index].name,
           expandText: '>>',
           collapseText: '<<',
           maxLines: 1,
@@ -43,7 +45,7 @@ class UserTile  extends StatelessWidget {
             style: Design.subTitleStyle(size),
             children: <TextSpan>[
               TextSpan(text: 'মোবাইল: ',style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-              TextSpan(text: '01830200087',style: TextStyle(color: CustomColors.liteGrey)),
+              TextSpan(text: userList[index].phone,style: TextStyle(color: CustomColors.liteGrey)),
 
             ],
           ),

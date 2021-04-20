@@ -63,7 +63,7 @@ class _LainManListState extends State<LainManList> {
                     verticalOffset: 400,
                     child: FadeInAnimation(
                       child: GestureDetector(
-                          onTap: ()=>_userDetailsModal(size,context),
+                          onTap: ()=>_lainManDetailsModal(size,context),
                           onLongPress: ()=>_deleteLainMan(),
                           child: UserTile(index: index)
                       ),
@@ -130,7 +130,7 @@ class _LainManListState extends State<LainManList> {
                             "assets/field-icon/icon_password.png", size,lmProvider),
                         SizedBox(height: 10),
                         _textField('এন আইডি নাম্বার',
-                            "assets/field-icon/icon_pad.png", size,lmProvider),
+                            "assets/field-icon/icon_id.png", size,lmProvider),
                         SizedBox(height: 10),
                         _textField(
                             'বাবার নাম', "assets/field-icon/icon_user.png", size,lmProvider),
@@ -153,7 +153,7 @@ class _LainManListState extends State<LainManList> {
     );
   }
 
-  void _userDetailsModal(Size size,BuildContext context){
+  void _lainManDetailsModal(Size size,BuildContext context){
     showModalBottomSheet(
       context: context,
       builder: (context)=> Container(
