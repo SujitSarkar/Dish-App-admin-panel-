@@ -29,6 +29,21 @@ class Variables {
     "লগ আউট",
   ];
 
+  static final List<String> lainManHomeMenuText = [
+    "সকল গ্রাহকের তালিকা",
+    "বকেয়া বিল গ্রাহকের তালিকা",
+    "পরিশোধিত বিল গ্রাহকের তালিকা",
+    "গ্রাহকের সমস্যার তালিকা",
+    "লগ আউট",
+  ];
+  static final List<IconData> lainManHomeMenuIcon = [
+    Icons.people_rounded,
+    Icons.people_outline,
+    Icons.people_alt_outlined,
+    Icons.error_outline,
+    Icons.logout,
+  ];
+
   static final List<IconData> homeMenuIcon = [
     Icons.person_add,
     Icons.people_rounded,

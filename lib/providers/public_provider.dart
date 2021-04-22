@@ -35,10 +35,11 @@ class PublicProvider extends ChangeNotifier{
       return Future.value(false);
     }
   }
-  Future<bool> updateAboutUs(String id, String aboutUs)async{
+  Future<bool> updateAboutUs(String id, String aboutUs,String service)async{
     try{
       await FirebaseFirestore.instance.collection('OfficeDetails').doc(id).update({
         'aboutUs': aboutUs,
+        'ourService':service
       });
       return Future.value(true);
     }catch(error){

@@ -1,10 +1,12 @@
 class LainManModel{
+  String id;
+  String name;
   String phone;
   String password;
   String nID;
   String fatherName;
   String address;
   String timeStamp;
-  LainManModel({this.address,this.phone,this.password,
-    this.fatherName,this.nID,this.timeStamp});
+  LainManModel({this.id,this.address,this.phone,this.password,
+    this.fatherName,this.nID,this.timeStamp,this.name});
 }

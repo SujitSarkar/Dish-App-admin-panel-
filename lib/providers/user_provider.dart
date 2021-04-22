@@ -71,7 +71,7 @@ class UserProvider extends PublicProvider{
   }
 
   Future<bool> getPendingBillUser()async{
-    final String monthYear = '${DateTime.now().month}${DateTime.now().year}';
+    final String monthYear = '${DateTime.now().month}/${DateTime.now().year}';
     try{
       await FirebaseFirestore.instance.collection('Users').get().then((snapshot){
         _pendingBillUserList.clear();
@@ -101,7 +101,7 @@ class UserProvider extends PublicProvider{
   }
 
   Future<bool> getPaidBillUser()async{
-    final String monthYear = '${DateTime.now().month}${DateTime.now().year}';
+    final String monthYear = '${DateTime.now().month}/${DateTime.now().year}';
     try{
       await FirebaseFirestore.instance.collection('Users').get().then((snapshot){
         _paidBillUserList.clear();
@@ -141,12 +141,40 @@ class UserProvider extends PublicProvider{
               name: element.doc['name'],
               address: element.doc['address'],
               timeStamp: element.doc['timeStamp'],
-              problem: element.doc['problem']
+              problem: element.doc['problem'],
+              state: element.doc['state']
           );
           _userProblemList.add(problemModel);
         });
       });
       notifyListeners();
+      return Future.value(true);
+    }catch(error){
+      return Future.value(false);
+    }
+  }
+
+  Future<bool> payUserBill(DateTime date,String billType, String userPhone,String userID,String name,String amount)async{
+    try{
+      int timeStamp = DateTime.now().millisecondsSinceEpoch;
+      await FirebaseFirestore.instance.collection('UserBillingInfo').doc('$userID$timeStamp').set({
+        'id': '$userID$timeStamp',
+        'name': name,
+        'userID': userID,
+        'userPhone': userPhone,
+        'monthYear': '${date.month}/${date.year}',
+        'billType': billType,
+        'billingNumber': 'admin/lainMan',
+        'transactionId': 'admin/lainMan',
+        'amount': amount,
+        'state': 'approved',
+        'timeStamp': timeStamp.toString()
+      }).then((value)async{
+        await FirebaseFirestore.instance.collection('Users').doc(userID).update({
+          'billingState': 'approved',
+          'monthYear': '${date.month}/${date.year}',
+        });
+      });
       return Future.value(true);
     }catch(error){
       return Future.value(false);

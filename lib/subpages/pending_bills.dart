@@ -105,7 +105,7 @@ class _PendingBillState extends State<PendingBill> {
           onNegativeClick: () {
             Navigator.of(context).pop();
           },
-          positiveText: 'হ্যা',
+          positiveText: 'হ্যাঁ',
           negativeText: 'না',
         );
       },

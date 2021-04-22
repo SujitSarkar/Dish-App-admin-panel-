@@ -1,4 +1,4 @@
-import 'package:admin_app/providers/user_provider.dart';
+import 'package:admin_app/providers/lain_man_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
 import 'package:admin_app/widgets/app_bar.dart';
@@ -9,42 +9,44 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AddNewUser extends StatefulWidget {
+class AddLainMan extends StatefulWidget {
   @override
-  _AddNewUserState createState() => _AddNewUserState();
+  _AddLainManState createState() => _AddLainManState();
 }
 
-class _AddNewUserState extends State<AddNewUser> {
+class _AddLainManState extends State<AddLainMan> {
   bool _isObscure = false;
   int _count=0;
 
-  void _customInit(UserProvider uProvider)async{
+  void _customInit(LainManProvider lmProvider)async{
     setState(()=>_count++);
-    uProvider.userModel.name='';
-    uProvider.userModel.phone='';
-    uProvider.userModel.password='';
-    uProvider.userModel.nID='';
-    uProvider.userModel.fatherName='';
-    uProvider.userModel.address='';
-    await uProvider.checkConnectivity();
+    lmProvider.lainManModel.name='';
+    lmProvider.lainManModel.phone='';
+    lmProvider.lainManModel.password='';
+    lmProvider.lainManModel.nID='';
+    lmProvider.lainManModel.fatherName='';
+    lmProvider.lainManModel.address='';
+    await lmProvider.checkConnectivity();
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size size=MediaQuery.of(context).size;
-    final UserProvider uProvider = Provider.of<UserProvider>(context);
-    if(_count==0) _customInit(uProvider);
+    final Size size = MediaQuery.of(context).size;
+    final LainManProvider lmProvider = Provider.of<LainManProvider>(context);
+    if(_count==0) _customInit(lmProvider);
 
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: PublicAppBar(context,'নতুন গ্রাহক নিবন্ধন করুন'),
+        child: PublicAppBar(context,'নতুন লাইনম্যান নিবন্ধন করুন'),
       ),
-      body: uProvider.internetConnected==true? _bodyUI(size,uProvider): NoInternet(uProvider),
+      body: lmProvider.internetConnected==true? _bodyUI(size, lmProvider):NoInternet(lmProvider),
     );
   }
-  Widget _bodyUI(Size size,UserProvider uProvider)=> Column(
+
+  Widget _bodyUI(Size size, LainManProvider lmProvider)=>Column(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.center,
     mainAxisSize: MainAxisSize.max,
@@ -58,30 +60,34 @@ class _AddNewUserState extends State<AddNewUser> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               SizedBox(height: 30),
-              _textField(
-                  'নাম', "assets/field-icon/icon_user.png", size,uProvider),
-              _textField('মোবাইল নাম্বার',
-                  'assets/field-icon/icon_phone.png', size,uProvider),
-              _textField('পাসওয়ার্ড',
-                  "assets/field-icon/icon_password.png", size,uProvider),
-              _textField('এন আইডি নাম্বার',
-                  "assets/field-icon/icon_id.png", size,uProvider),
-              _textField(
-                  'বাবার নাম', "assets/field-icon/icon_user.png", size,uProvider),
-              _textField('বাড়ির ঠিকানা',
-                  "assets/field-icon/icon_address.png", size,uProvider),
-              SizedBox(height: 12),
 
+              _textField(
+                  'নাম', "assets/field-icon/icon_user.png", size,lmProvider),
+              _textField('মোবাইল নাম্বার',
+                  'assets/field-icon/icon_phone.png', size,lmProvider),
+              SizedBox(height: 10),
+              _textField('পাসওয়ার্ড',
+                  "assets/field-icon/icon_password.png", size,lmProvider),
+              SizedBox(height: 10),
+              _textField('এন আইডি নাম্বার',
+                  "assets/field-icon/icon_id.png", size,lmProvider),
+              SizedBox(height: 10),
+              _textField(
+                  'বাবার নাম', "assets/field-icon/icon_user.png", size,lmProvider),
+              SizedBox(height: 10),
+              _textField('বাড়ির ঠিকানা',
+                  "assets/field-icon/icon_address.png", size,lmProvider),
+              SizedBox(height: 20),
               GestureDetector(
                 onTap: ()async{
-                  uProvider.checkConnectivity().then((value){
-                    if(uProvider.internetConnected==true){
-                      _formValidation(uProvider);
+                  lmProvider.checkConnectivity().then((value){
+                    if(lmProvider.internetConnected==true){
+                      _formValidation(lmProvider);
                     }else{
-                    showInfo('কোনও ইন্টারনেট সংযোগ নেই!');
+                      showInfo('কোনও ইন্টারনেট সংযোগ নেই!');
                     }
                   },onError: (error)=>showInfo(error.toString()));
-                  },
+                },
                 child: shadowButton(size, 'নিবন্ধন করুন'),
               ),
 
@@ -114,7 +120,7 @@ class _AddNewUserState extends State<AddNewUser> {
     ],
   );
 
-  Widget _textField(String hint, String prefixAsset, Size size,UserProvider uProvider) =>
+  Widget _textField(String hint, String prefixAsset, Size size,LainManProvider lmProvider) =>
       Padding(
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: TextField(
@@ -127,16 +133,16 @@ class _AddNewUserState extends State<AddNewUser> {
               color: CustomColors.textColor,
             ),
             onChanged: (val) => hint == 'নাম'
-                ? uProvider.userModel.name = val
+                ? lmProvider.lainManModel.name = val
                 :hint == 'মোবাইল নাম্বার'
-                ? uProvider.userModel.phone = val
+                ? lmProvider.lainManModel.phone = val
                 : hint == 'পাসওয়ার্ড'
-                ? uProvider.userModel.password = val
+                ? lmProvider.lainManModel.password = val
                 : hint == 'এন আইডি নাম্বার'
-                ? uProvider.userModel.nID = val
+                ? lmProvider.lainManModel.nID = val
                 : hint == 'বাবার নাম'
-                ? uProvider.userModel.fatherName = val
-                : uProvider.userModel.address = val,
+                ? lmProvider.lainManModel.fatherName = val
+                : lmProvider.lainManModel.address = val,
             decoration: Design.loginFormDecoration.copyWith(
               hintText: hint,
               labelText: hint,
@@ -165,27 +171,28 @@ class _AddNewUserState extends State<AddNewUser> {
             )),
       );
 
-  void _formValidation(UserProvider uProvider)async{
-    if(uProvider.userModel.name.isNotEmpty &&
-        uProvider.userModel.phone.isNotEmpty &&
-        uProvider.userModel.password.isNotEmpty &&
-        uProvider.userModel.nID.isNotEmpty &&
-        uProvider.userModel.fatherName.isNotEmpty &&
-        uProvider.userModel.address.isNotEmpty){
-      if(uProvider.userModel.phone.length==11){
+  void _formValidation(LainManProvider lmProvider)async{
+    if(lmProvider.lainManModel.name.isNotEmpty &&
+        lmProvider.lainManModel.phone.isNotEmpty &&
+        lmProvider.lainManModel.password.isNotEmpty &&
+        lmProvider.lainManModel.nID.isNotEmpty &&
+        lmProvider.lainManModel.fatherName.isNotEmpty &&
+        lmProvider.lainManModel.address.isNotEmpty){
+      if(lmProvider.lainManModel.phone.length==11){
         showLoadingDialog('অপেক্ষা করুন...');
-        QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('Users')
-            .where('phone', isEqualTo: uProvider.userModel.phone).get();
+        QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('LainMan')
+            .where('phone', isEqualTo: lmProvider.lainManModel.phone).get();
         final List<QueryDocumentSnapshot> userSnapshot = snapshot.docs;
         if(userSnapshot.isEmpty){
-          uProvider.addNewUser(uProvider).then((value){
+          lmProvider.addNewLainMan(lmProvider).then((value)async{
             if(value==true){
               closeLoadingDialog();
-              showSuccessMgs('নতুন গ্রাহক নিবন্ধন সফল হয়েছে');
+              showSuccessMgs('নতুন লাইনম্যান নিবন্ধন সফল হয়েছে');
+              await lmProvider.getAllLainMan();
               Navigator.pop(context);
             }else{
               closeLoadingDialog();
-              showErrorMgs('নতুন গ্রাহক নিবন্ধন সফল হয়েছে!\nআবার চেষ্টা করুন');
+              showErrorMgs('নতুন লাইনম্যান নিবন্ধন সফল হয়েছে!\nআবার চেষ্টা করুন');
             }
           },onError: (error){
             closeLoadingDialog();
@@ -193,10 +200,10 @@ class _AddNewUserState extends State<AddNewUser> {
           });
         } else {
           closeLoadingDialog();
-          showInfo('এই নাম্বার দিয়ে আগে থেকেই গ্রাহক নিবন্ধন করা আছে!');
+          showInfo('এই নাম্বার দিয়ে আগে থেকেই লাইনম্যান নিবন্ধন করা আছে!');
         }
       }else showInfo('মোবাইল নাম্বার ১১ সংখ্যার হতে হবে');
+
     }else showInfo('ফর্ম পুরন করুন');
   }
 }
-

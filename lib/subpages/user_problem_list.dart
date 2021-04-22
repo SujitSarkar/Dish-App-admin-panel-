@@ -4,7 +4,9 @@ import 'package:admin_app/tiles/problem_tile.dart';
 import 'package:admin_app/widgets/app_bar.dart';
 import 'package:admin_app/widgets/no_internet.dart';
 import 'package:admin_app/widgets/notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -60,9 +62,51 @@ class _UserProblemListState extends State<UserProblemList> {
                 child: SlideAnimation(
                     verticalOffset: 400,
                     child: FadeInAnimation(
-                      child: ProblemTile(index: index,problemList:  uProvider.userProblemList),
+                      child: GestureDetector(
+                        onTap: ()=> _solveUserProblemDialog(uProvider, uProvider.userProblemList[index].id),
+                          child: ProblemTile(index: index,problemList:  uProvider.userProblemList)),
                     ))),
       ),
     ),
   );
+
+  void _solveUserProblemDialog(UserProvider uProvider, String id){
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return ClassicGeneralDialogWidget(
+          titleText: 'এই গ্রাহকের সমস্যা সমাধান করেছেন?',
+          //contentText: 'content',
+          onPositiveClick: () async{
+            await uProvider.checkConnectivity().then((value)async{
+              if(uProvider.internetConnected==true){
+                showLoadingDialog('অপেক্ষা করুন...');
+                await FirebaseFirestore.instance.collection('UserProblems').doc(id).update({
+                  'state': 'yes'
+                }).then((value)async{
+                  await uProvider.getUserProblem();
+                  closeLoadingDialog();
+                  Navigator.pop(context);
+                },onError: (error){
+                  closeLoadingDialog();
+                  showErrorMgs(error.toString());
+                  Navigator.pop(context);
+                });
+              }else{
+                showErrorMgs('কোনও ইন্টারনেট সংযোগ নেই!');
+                Navigator.pop(context);
+              }
+            });
+          },
+          onNegativeClick: ()=> Navigator.of(context).pop(),
+          positiveText: 'হ্যাঁ',
+          negativeText: 'না',
+        );
+      },
+      animationType: DialogTransitionType.slideFromTopFade,
+      curve: Curves.fastOutSlowIn,
+      duration: Duration(milliseconds: 500),
+    );
+  }
 }

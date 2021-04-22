@@ -2,11 +2,14 @@ import 'package:admin_app/model/user_model.dart';
 import 'package:admin_app/providers/user_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
 import 'package:admin_app/public_variables/design.dart';
+import 'package:admin_app/subpages/pay_user_bill.dart';
 import 'package:admin_app/tiles/user_tile.dart';
 import 'package:admin_app/widgets/app_bar.dart';
 import 'package:admin_app/widgets/no_internet.dart';
 import 'package:admin_app/widgets/notifications.dart';
+import 'package:admin_app/widgets/routing_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -62,6 +65,12 @@ class _PendingBillUserListState extends State<PendingBillUserList> {
                     verticalOffset: 400,
                     child: FadeInAnimation(
                       child: GestureDetector(
+                        onLongPress: ()=> _payUserBillConfirmationDialog(
+                            uProvider,
+                            uProvider.pendingBillUserList[index].name,
+                          uProvider.pendingBillUserList[index].phone,
+                          uProvider.pendingBillUserList[index].id,
+                        ),
                           onTap: ()=>_userDetailsModal(size,context,index,uProvider.pendingBillUserList),
                           child: UserTile(index: index,userList:  uProvider.pendingBillUserList,)
                       ),
@@ -130,6 +139,36 @@ class _PendingBillUserListState extends State<PendingBillUserList> {
           ],
         ),
       ),
+    );
+  }
+
+  void _payUserBillConfirmationDialog(UserProvider uProvider, String name,String userPhone, String userID){
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return ClassicGeneralDialogWidget(
+          titleText: 'এই গ্রাহকের বিল প্রদান করতে চান?',
+          //contentText: 'content',
+          onPositiveClick: () async{
+            await uProvider.checkConnectivity().then((value)async{
+              if(uProvider.internetConnected==true){
+                Navigator.pop(context);
+                Navigator.push(context, AnimationPageRoute(navigateTo: PayUserBill(name: name,userPhone: userPhone,userID: userID)));
+              }else{
+                showErrorMgs('কোনও ইন্টারনেট সংযোগ নেই!');
+                Navigator.pop(context);
+              }
+            });
+          },
+          onNegativeClick: ()=> Navigator.of(context).pop(),
+          positiveText: 'হ্যাঁ',
+          negativeText: 'না',
+        );
+      },
+      animationType: DialogTransitionType.slideFromTopFade,
+      curve: Curves.fastOutSlowIn,
+      duration: Duration(milliseconds: 500),
     );
   }
 }

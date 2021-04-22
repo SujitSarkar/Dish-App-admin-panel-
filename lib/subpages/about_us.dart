@@ -16,6 +16,7 @@ class AboutUs extends StatefulWidget {
 
 class _AboutUsState extends State<AboutUs> {
   TextEditingController _aboutController=TextEditingController();
+  TextEditingController _serviceController=TextEditingController();
   String _id='';
   int _counter=0;
 
@@ -31,6 +32,7 @@ class _AboutUsState extends State<AboutUs> {
     final List<QueryDocumentSnapshot> addressSnapshot = snapshot.docs;
     if(addressSnapshot.isNotEmpty){
       _aboutController.text = addressSnapshot[0].get('aboutUs')??'';
+      _serviceController.text = addressSnapshot[0].get('ourService')??'';
       _id = addressSnapshot[0].get('id');
       closeLoadingDialog();
     }else{
@@ -74,6 +76,7 @@ class _AboutUsState extends State<AboutUs> {
             children: <Widget>[
               SizedBox(height: 30),
               _textField('আমাদের সম্পর্কে',size),
+              _textField('আমাদের সার্ভিস',size),
               SizedBox(height: 12),
 
               GestureDetector(
@@ -122,10 +125,10 @@ class _AboutUsState extends State<AboutUs> {
       Padding(
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
         child: TextField(
-            controller: _aboutController,
+            controller: hint=='আমাদের সম্পর্কে'? _aboutController:_serviceController,
             textCapitalization:TextCapitalization.sentences,
             keyboardType:TextInputType.text,
-            maxLines: 25,
+            maxLines: 10,
             textAlign: TextAlign.justify,
             style: Design.subTitleStyle(size).copyWith(
               color: CustomColors.textColor,
@@ -137,10 +140,10 @@ class _AboutUsState extends State<AboutUs> {
       );
 
   void _checkValidity(PublicProvider pProvider)async{
-      if(_aboutController.text.isNotEmpty){
+      if(_aboutController.text.isNotEmpty || _serviceController.text.isNotEmpty){
         showLoadingDialog('অপেক্ষা করুন...');
 
-        await pProvider.updateAboutUs(_id, _aboutController.text).then((value){
+        await pProvider.updateAboutUs(_id, _aboutController.text,_serviceController.text).then((value){
           if(value==true){
             closeLoadingDialog();
             showSuccessMgs('পরিবর্তন সফল হয়েছে');
@@ -153,7 +156,7 @@ class _AboutUsState extends State<AboutUs> {
           closeLoadingDialog();
           showErrorMgs(error.toString());
         });
-      }else showInfo('আপনাদের সম্পর্কে লিখুন');
+      }else showInfo('আপনাদের সম্পর্কে অথবা সার্ভিস লিখুন ');
 
 
   }

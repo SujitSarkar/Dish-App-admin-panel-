@@ -58,11 +58,19 @@ class ProblemTile extends StatelessWidget {
               textAlign: TextAlign.justify,
               style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey,fontWeight: FontWeight.w500),
             ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(DateFormat("dd-MMM-yyyy").format(DateTime.fromMillisecondsSinceEpoch(int.parse(problemList[index].timeStamp))).toString(),
+              style: Design.subTitleStyle(size).copyWith(color: Colors.grey[700])),
+            Text(
+              problemList[index].state=='no'?'অমীমাংসিত':'মীমাংসিত',
+              style: Design.subTitleStyle(size).copyWith(color: Colors.grey[700],fontStyle: FontStyle.italic),
+            )
           ],
         ),
-
-        subtitle: Text(DateFormat("dd-MMM-yyyy").format(DateTime.fromMillisecondsSinceEpoch(int.parse(problemList[index].timeStamp))).toString(),
-          style: Design.subTitleStyle(size).copyWith(color: Colors.grey[700]),
+          ],
         ),
       ),
     );
