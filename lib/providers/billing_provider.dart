@@ -27,6 +27,7 @@ class BillingProvider extends PublicProvider{
             billingNumber:element.doc['billingNumber'],
             transactionId:element.doc['transactionId'],
             state:element.doc['state'],
+            payDate: element.doc['payDate'],
             timeStamp: element.doc['timeStamp'],
           );
           _approvedBillList.add(billingInfo);
@@ -55,6 +56,7 @@ class BillingProvider extends PublicProvider{
           billingNumber:element.doc['billingNumber'],
           transactionId:element.doc['transactionId'],
           state:element.doc['state'],
+          payDate: element.doc['payDate'],
           timeStamp: element.doc['timeStamp'],
         );
         _pendingBillList.add(billingInfo);

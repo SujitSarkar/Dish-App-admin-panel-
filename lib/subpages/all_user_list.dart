@@ -116,7 +116,7 @@ class _AllUserListState extends State<AllUserList> {
                               TextSpan(text: 'বাবার নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
                               TextSpan(text: '${userList[index].fatherName}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
-                              TextSpan(text: 'এন আইডি নাম্বার: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
+                              TextSpan(text: 'লাইন নাম্বার: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
                               TextSpan(text: '${userList[index].nID}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'বাড়ির ঠিকানা: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),

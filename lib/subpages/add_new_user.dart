@@ -64,7 +64,7 @@ class _AddNewUserState extends State<AddNewUser> {
                   'assets/field-icon/icon_phone.png', size,uProvider),
               _textField('পাসওয়ার্ড',
                   "assets/field-icon/icon_password.png", size,uProvider),
-              _textField('এন আইডি নাম্বার',
+              _textField('লাইন নাম্বার',
                   "assets/field-icon/icon_id.png", size,uProvider),
               _textField(
                   'বাবার নাম', "assets/field-icon/icon_user.png", size,uProvider),
@@ -92,7 +92,9 @@ class _AddNewUserState extends State<AddNewUser> {
       Align(
         alignment: Alignment.bottomCenter,
         child: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            launchInWebViewWithJavaScript(context, 'https://glamworlditltd.com/');
+          },
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(children: [
@@ -119,7 +121,7 @@ class _AddNewUserState extends State<AddNewUser> {
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: TextField(
             keyboardType:
-            hint == 'মোবাইল নাম্বার' || hint == 'এন আইডি নাম্বার'
+            hint == 'মোবাইল নাম্বার' || hint == 'লাইন নাম্বার'
                 ? TextInputType.phone
                 : TextInputType.text,
             obscureText:hint == 'পাসওয়ার্ড'? _isObscure ? true : false:false,
@@ -132,7 +134,7 @@ class _AddNewUserState extends State<AddNewUser> {
                 ? uProvider.userModel.phone = val
                 : hint == 'পাসওয়ার্ড'
                 ? uProvider.userModel.password = val
-                : hint == 'এন আইডি নাম্বার'
+                : hint == 'লাইন নাম্বার'
                 ? uProvider.userModel.nID = val
                 : hint == 'বাবার নাম'
                 ? uProvider.userModel.fatherName = val

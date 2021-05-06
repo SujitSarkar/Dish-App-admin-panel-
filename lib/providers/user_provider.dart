@@ -168,6 +168,7 @@ class UserProvider extends PublicProvider{
         'transactionId': 'admin/lainMan',
         'amount': amount,
         'state': 'approved',
+        'payDate': '${DateTime.now().month}/${DateTime.now().year}',
         'timeStamp': timeStamp.toString()
       }).then((value)async{
         await FirebaseFirestore.instance.collection('Users').doc(userID).update({

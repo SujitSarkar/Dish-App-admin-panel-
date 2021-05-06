@@ -155,22 +155,25 @@ class _LainManListState extends State<LainManList> {
                           textAlign: TextAlign.justify,
                           text: TextSpan(
                             //text: 'Hello ',
-                            style: Design.subTitleStyle(size),
+                            style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey),
                             children: <TextSpan>[
                               TextSpan(text: 'নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '${lainManList[index].name}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].name}\n\n'),
 
                               TextSpan(text: 'মোবাইল: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '${lainManList[index].phone}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].phone}\n\n'),
+
+                              TextSpan(text: 'পাসওয়ার্ড: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].password}\n\n'),
 
                               TextSpan(text: 'বাবার নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '${lainManList[index].fatherName}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].fatherName}\n\n'),
 
                               TextSpan(text: 'এন আইডি নাম্বার: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '${lainManList[index].nID}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].nID}\n\n'),
 
                               TextSpan(text: 'বাড়ির ঠিকানা: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
-                              TextSpan(text: '${lainManList[index].address}',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
+                              TextSpan(text: '${lainManList[index].address}'),
 
                             ],
                           ),

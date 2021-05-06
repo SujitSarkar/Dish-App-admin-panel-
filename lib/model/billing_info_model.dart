@@ -10,6 +10,7 @@ class BillingInfoModel{
   String amount;
   String state;
   String timeStamp;
+  String payDate;
 
   BillingInfoModel({
     this.id,
@@ -19,5 +20,5 @@ class BillingInfoModel{
     this.billingNumber,
     this.transactionId,
     this.timeStamp,
-    this.state,this.amount,this.userID,this.userPhone});
+    this.state,this.amount,this.userID,this.userPhone,this.payDate});
 }

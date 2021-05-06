@@ -36,6 +36,7 @@ dependencies:
   cloud_firestore: ^1.0.5
   shared_preferences: ^2.0.5
   connectivity: ^3.0.3
+  url_launcher:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -83,7 +84,7 @@ flutter:
     - assets/field-icon/icon_search.png
     #slider image
     - assets/slider-image/img1.jpg
-    - assets/slider-image/img2.jpg
+    - assets/slider-image/img2.png
     - assets/slider-image/img3.jpg
     - assets/slider-image/img4.jpg
     - assets/slider-image/img5.jpg

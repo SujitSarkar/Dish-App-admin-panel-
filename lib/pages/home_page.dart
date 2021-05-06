@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         ///Image Slider
         Container(
-          height: size.width * .5,
+          height: size.width * .4,
           width: size.width,
           child: CarouselSlider(
             options: CarouselOptions(
