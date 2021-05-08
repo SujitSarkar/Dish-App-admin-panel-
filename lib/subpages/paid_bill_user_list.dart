@@ -119,6 +119,7 @@ class _PaidBillUserListState extends State<PaidBillUserList> {
                               TextSpan(text: 'বাড়ির ঠিকানা: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
                               TextSpan(text: '${userList[index].address}',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
+
                             ],
                           ),
                         )                        ],

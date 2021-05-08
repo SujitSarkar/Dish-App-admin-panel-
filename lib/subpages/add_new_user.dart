@@ -67,7 +67,7 @@ class _AddNewUserState extends State<AddNewUser> {
               _textField('লাইন নাম্বার',
                   "assets/field-icon/icon_id.png", size,uProvider),
               _textField(
-                  'বাবার নাম', "assets/field-icon/icon_user.png", size,uProvider),
+                  'পিতা/স্বামী', "assets/field-icon/icon_user.png", size,uProvider),
               _textField('বাড়ির ঠিকানা',
                   "assets/field-icon/icon_address.png", size,uProvider),
               SizedBox(height: 12),
@@ -136,7 +136,7 @@ class _AddNewUserState extends State<AddNewUser> {
                 ? uProvider.userModel.password = val
                 : hint == 'লাইন নাম্বার'
                 ? uProvider.userModel.nID = val
-                : hint == 'বাবার নাম'
+                : hint == 'পিতা/স্বামী'
                 ? uProvider.userModel.fatherName = val
                 : uProvider.userModel.address = val,
             decoration: Design.loginFormDecoration.copyWith(

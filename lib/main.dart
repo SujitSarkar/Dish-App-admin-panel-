@@ -16,17 +16,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await firebase_core.Firebase.initializeApp();
-  runApp(MyApp());
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  final identifier = preferences.get('identifier');
+  final phone = preferences.get('phone');
+
+  runApp(MyApp(identifier,phone));
 }
 
+// ignore: must_be_immutable
 class MyApp extends StatefulWidget {
+  String phone;
+  String identifier;
+  MyApp(this.identifier,this.phone);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _phone;
-  String _identifier;
 
   @override
   void initState() {
@@ -47,15 +54,7 @@ class _MyAppState extends State<MyApp> {
       ..userInteractions = true
       ..dismissOnTap = false;
     // ..customAnimation = CustomAnimation();
-    _checkPreferences();
-  }
 
-  void _checkPreferences() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      _identifier = preferences.get('identifier');
-      _phone = preferences.get('phone');
-    });
   }
 
   @override
@@ -68,14 +67,15 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => BillingProvider()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: Variables.appTitle,
         theme: ThemeData(
           primarySwatch: MaterialColor(0xff0095B2, CustomColors.themeMapColor),
           canvasColor: Colors.transparent,
         ),
-        home: _phone==null
+        home: widget.phone==null
             ? LoginPage()
-            : _identifier == 'admin'
+            : widget.identifier == 'admin'
                 ? HomePage()
                 : LainManHome(),
         builder: EasyLoading.init(),

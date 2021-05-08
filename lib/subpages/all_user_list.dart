@@ -8,6 +8,7 @@ import 'package:admin_app/widgets/app_bar.dart';
 import 'package:admin_app/widgets/no_internet.dart';
 import 'package:admin_app/widgets/notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,10 @@ class AllUserList extends StatefulWidget {
 }
 
 class _AllUserListState extends State<AllUserList> {
+  final GlobalKey<PopupMenuButtonState<int>> _key = GlobalKey();
   int _counter=0;
+  String _info='';
+
   _customInit(UserProvider uProvider)async{
     showLoadingDialog('অপেক্ষা করুন...');
     setState(()=>_counter++);
@@ -42,10 +46,36 @@ class _AllUserListState extends State<AllUserList> {
 
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: PublicAppBar(context,'সকল গ্রাহকের তালিকা'),
+      appBar: AppBar(
+        title: Text('সকল গ্রাহকের তালিকা'),
+        actions: [
+          PopupMenuButton<int>(
+            key: _key,
+            onSelected: (int val){
+              if(val==1){
+                setState(()=> _info = 'মোট গ্রাহক সংখ্যা ${uProvider.allUserList.length} জন');
+                _showInfoDialog();
+              }else if(val==2){
+                setState(()=> _info = 'মোট লাইন সংখ্যা ${uProvider.allUserList.length} টি');
+                _showInfoDialog();
+              }
+            },
+            itemBuilder: (context) {
+              return <PopupMenuEntry<int>>[
+                PopupMenuItem(child: Text('মোট গ্রাহক সংখ্যা',style: TextStyle(fontSize: size.width*.04)), value: 1,),
+                PopupMenuItem(child: Text('মোট লাইন সংখ্যা',style: TextStyle(fontSize: size.width*.04)), value: 2),
+              ];
+            },
+            tooltip: 'অপশন দেখুন',
+            color: Colors.white,
+            offset: Offset(0,size.width*.075),
+          ),
+        ],
       ),
+      // appBar: PreferredSize(
+      //   preferredSize: Size.fromHeight(60),
+      //   child: PublicAppBar(context,'সকল গ্রাহকের তালিকা'),
+      // ),
       body: uProvider.internetConnected==true? _bodyUI(size,context,uProvider):NoInternet(uProvider),
     );
   }
@@ -65,6 +95,9 @@ class _AllUserListState extends State<AllUserList> {
                     child: FadeInAnimation(
                       child: GestureDetector(
                           onTap: ()=>_userDetailsModal(size,context,index,uProvider.allUserList),
+                          onLongPress: (){
+                            _deleteUserConfirmationDialog(uProvider, uProvider.allUserList[index].id);
+                          },
                           child: UserTile(index: index,userList: uProvider.allUserList)
                       ),
                     )
@@ -73,6 +106,55 @@ class _AllUserListState extends State<AllUserList> {
       ),
     ),
   );
+
+  void _deleteUserConfirmationDialog(UserProvider uProvider, String userID){
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return ClassicGeneralDialogWidget(
+          titleText: 'এই গ্রাহক কে ডিলিট করতে চান?',
+          //contentText: 'content',
+          onPositiveClick: () async{
+            await uProvider.checkConnectivity().then((value)async{
+              if(uProvider.internetConnected==true){
+                showLoadingDialog('অপেক্ষা করুন...');
+                uProvider.deleteUser(userID);
+                Navigator.pop(context);
+              }else{
+                showErrorMgs('কোনও ইন্টারনেট সংযোগ নেই!');
+                Navigator.pop(context);
+              }
+            });
+          },
+          onNegativeClick: ()=> Navigator.of(context).pop(),
+          positiveText: 'হ্যাঁ',
+          negativeText: 'না',
+        );
+      },
+      animationType: DialogTransitionType.slideFromTopFade,
+      curve: Curves.fastOutSlowIn,
+      duration: Duration(milliseconds: 500),
+    );
+  }
+
+  void _showInfoDialog(){
+    showAnimatedDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return ClassicGeneralDialogWidget(
+          titleText: '$_info',
+
+          onNegativeClick: ()=> Navigator.of(context).pop(),
+          negativeText: 'বাতিল করুন',
+        );
+      },
+      animationType: DialogTransitionType.slideFromTopFade,
+      curve: Curves.fastOutSlowIn,
+      duration: Duration(milliseconds: 500),
+    );
+  }
 
   void _userDetailsModal(Size size,BuildContext context,int index, List<UserModel> userList){
     showModalBottomSheet(
@@ -113,7 +195,7 @@ class _AllUserListState extends State<AllUserList> {
                               TextSpan(text: 'মোবাইল: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
                               TextSpan(text: '${userList[index].phone}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
-                              TextSpan(text: 'বাবার নাম: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
+                              TextSpan(text: 'পিতা/স্বামী: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),
                               TextSpan(text: '${userList[index].fatherName}\n\n',style: Design.subTitleStyle(size).copyWith(color: CustomColors.liteGrey)),
 
                               TextSpan(text: 'লাইন নাম্বার: ',style: Design.subTitleStyle(size).copyWith(fontWeight: FontWeight.bold,color: CustomColors.liteGrey)),

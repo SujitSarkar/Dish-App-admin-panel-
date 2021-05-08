@@ -1,6 +1,7 @@
 import 'package:admin_app/model/problem_model.dart';
 import 'package:admin_app/model/user_model.dart';
 import 'package:admin_app/providers/public_provider.dart';
+import 'package:admin_app/widgets/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProvider extends PublicProvider{
@@ -45,7 +46,7 @@ class UserProvider extends PublicProvider{
 
   Future<bool> getAllUser()async{
     try{
-      await FirebaseFirestore.instance.collection('Users').get().then((snapshot){
+      await FirebaseFirestore.instance.collection('Users').orderBy('timeStamp',descending: true).get().then((snapshot){
         _allUserList.clear();
         snapshot.docChanges.forEach((element) {
           UserModel userModel = UserModel(
@@ -70,10 +71,22 @@ class UserProvider extends PublicProvider{
     }
   }
 
+  Future<void> deleteUser(String uId)async{
+    try {
+      await FirebaseFirestore.instance.collection('Users').doc(uId).delete();
+      getAllUser();
+      closeLoadingDialog();
+      showSuccessMgs('গ্রাহক ডিলিট সম্পন্ন হয়েছে');
+    }catch(error){
+      closeLoadingDialog();
+      showErrorMgs('গ্রাহক ডিলিট অসম্পন্ন হয়েছে');
+    }
+  }
+
   Future<bool> getPendingBillUser()async{
     final String monthYear = '${DateTime.now().month}/${DateTime.now().year}';
     try{
-      await FirebaseFirestore.instance.collection('Users').get().then((snapshot){
+      await FirebaseFirestore.instance.collection('Users').orderBy('timeStamp',descending: true).get().then((snapshot){
         _pendingBillUserList.clear();
         snapshot.docChanges.forEach((element) {
           if(monthYear != element.doc['monthYear'] || element.doc['billingState']=='pending'){
@@ -103,7 +116,7 @@ class UserProvider extends PublicProvider{
   Future<bool> getPaidBillUser()async{
     final String monthYear = '${DateTime.now().month}/${DateTime.now().year}';
     try{
-      await FirebaseFirestore.instance.collection('Users').get().then((snapshot){
+      await FirebaseFirestore.instance.collection('Users').orderBy('timeStamp',descending: true).get().then((snapshot){
         _paidBillUserList.clear();
         snapshot.docChanges.forEach((element) {
           if(monthYear == element.doc['monthYear'] && element.doc['billingState']=='approved'){

@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: CustomColors.whiteColor,
       appBar: AppBar(
-        title: Text('লগ ইন'),
+        //title: Text('লগ ইন'),
         elevation: 0,
         centerTitle: true,
       ),
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: EdgeInsets.only(
                         left: 15, right: 15, top: size.width * .08),
-                    child: Text(Variables.appTitle,style: TextStyle(color: Colors.white,fontSize: size.width*.07),),
+                    child: Text(Variables.appTitle,style: TextStyle(color: Colors.white,fontSize: size.width*.09),),
                     // child: Hero(
                     //   tag: 'hero-login',
                     //   child: Image.asset(

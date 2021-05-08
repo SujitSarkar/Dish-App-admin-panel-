@@ -1,5 +1,6 @@
 import 'package:admin_app/providers/billing_provider.dart';
 import 'package:admin_app/public_variables/colors.dart';
+import 'package:admin_app/subpages/billing_info/bill_this_month.dart';
 import 'package:admin_app/subpages/billing_info/by_date.dart';
 import 'package:admin_app/subpages/billing_info/by_user.dart';
 import 'package:admin_app/widgets/no_internet.dart';
@@ -33,7 +34,7 @@ class _BillingInfoState extends State<BillingInfo> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2,vsync: this);
+    _tabController = TabController(length: 3,vsync: this);
   }
   
   @override
@@ -52,6 +53,7 @@ class _BillingInfoState extends State<BillingInfo> with SingleTickerProviderStat
           tabs: [
             Tab(text: 'গ্রাহক অনুযায়ী'),
             Tab(text: 'মাস অনুযায়ী'),
+            Tab(text: 'বকেয়া বিল'),
           ],
         ),
       ),
@@ -60,6 +62,7 @@ class _BillingInfoState extends State<BillingInfo> with SingleTickerProviderStat
         children: [
           BillingInfoByUser(bProvider),
           BillingInfoByDate(bProvider),
+          BillThisMonth(bProvider),
         ],
       ):NoInternet(bProvider),
     );
